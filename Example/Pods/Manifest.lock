@@ -1,0 +1,29 @@
+PODS:
+  - Masonry (1.1.0)
+  - ZKActionSheet (0.1.0):
+    - Masonry
+    - ZKCategories
+  - ZKCategories (0.3.9):
+    - ZKCategories/Core (= 0.3.9)
+  - ZKCategories/Core (0.3.9)
+
+DEPENDENCIES:
+  - ZKActionSheet (from `../`)
+
+SPEC REPOS:
+  trunk:
+    - Masonry
+    - ZKCategories
+
+EXTERNAL SOURCES:
+  ZKActionSheet:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+  ZKActionSheet: a4a9d5fd1f0b14c2b921391f382995e8762a8ed0
+  ZKCategories: b551095f8d89f8139010b934fc45df2eb6beac53
+
+PODFILE CHECKSUM: 768583ae42220b18edba33cd9ca046bc524f3a73
+
+COCOAPODS: 1.10.1
