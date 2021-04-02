@@ -10,7 +10,10 @@
 
 @interface ZKActionSheetView : UIToolbar
 
+/** 顶部标题Label, 默认内容为"分享" */
 @property (nonatomic, strong) UILabel *titleLabel;
+
+/** 底部取消Button, 默认标题为"取消" */
 @property (nonatomic, strong) UIButton *cancelButton;
 
 @property (nonatomic, strong) NSArray *dataSource;

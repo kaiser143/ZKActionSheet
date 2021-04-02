@@ -35,8 +35,8 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-+ (instancetype)shareViewWithShareItems:(NSArray *)shareArray
-                          functionItems:(NSArray *)functionArray {
++ (instancetype)actionSheetWithShareItems:(NSArray *)shareArray
+                            functionItems:(NSArray *)functionArray {
     ZKActionSheet *shareView = [[self alloc] initWithShareItems:shareArray functionItems:functionArray];
     
     return shareView;

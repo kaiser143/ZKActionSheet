@@ -14,11 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) NSString *icon;
 @property (nonatomic, strong) NSString *title;
-@property (nonatomic, copy) dispatch_block_t didTappedHandler;
+@property (nonatomic, copy) dispatch_block_t handler;
 
-+ (instancetype)itemWithTitle:(NSString *)title
-                         icon:(NSString *)icon
-             didTappedHandler:(dispatch_block_t)didTappedHandler;
++ (instancetype)actionWithTitle:(NSString *)title
+                           icon:(NSString *)icon
+                        handler:(dispatch_block_t)handler;
 
 @end
 

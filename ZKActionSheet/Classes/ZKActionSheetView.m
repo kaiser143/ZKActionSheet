@@ -41,12 +41,11 @@
     }
     
     self.translucent = YES;
-    [self setBackgroundImage:UIImage.new forToolbarPosition:0 barMetrics:0]; 
+    [self setBackgroundImage:UIImage.new forToolbarPosition:0 barMetrics:0];
     [self setNeedsUpdateConstraints];
     [self updateConstraintsIfNeeded];
     
-    [self.tableView registerClass:[ZKActionSheetCell class]
-           forCellReuseIdentifier:NSStringFromClass([ZKActionSheetCell class])];
+    [self.tableView registerClass:[ZKActionSheetCell class] forCellReuseIdentifier:NSStringFromClass(ZKActionSheetCell.class)];
     
     return self;
 }
@@ -60,9 +59,9 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSArray *items = self.dataSource[indexPath.row];
     
-    ZKActionSheetCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([ZKActionSheetCell class])
+    ZKActionSheetCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(ZKActionSheetCell.class)
                                                              forIndexPath:indexPath];
-    cell.items = items;
+    cell.dataSource = items;
     
     return cell;
 }
@@ -72,9 +71,7 @@
 #pragma mark - events Handler
 
 - (void)didTappedCancelButton {
-    if (self.cancelBlock) {
-        self.cancelBlock();
-    }
+    !self.cancelBlock ?: self.cancelBlock();
 }
 
 #pragma mark - Private Methods
@@ -94,7 +91,7 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    
+
     //适配iOS11中UIToolbar无法点击问题
     if (@available(iOS 11.0, *)) {
         NSArray *array = self.subviews;
@@ -133,18 +130,15 @@
 //            } else {
 //                make.bottom.lessThanOrEqualTo(self).priorityHigh();
 //            }
-            
-            CGFloat bottom = 0;
-            if (@available(iOS 11, *)) {
-                bottom = [[UIApplication sharedApplication] delegate].window.safeAreaInsets.bottom;
-            }
-            make.height.mas_equalTo([ZKActionSheetConfiguration sharedInstance].cancelButtonHeight + bottom);
-            make.bottom.equalTo(self);
+
+            CGFloat safeArea = [self safeAreaBottom];
+            make.height.mas_equalTo([ZKActionSheetConfiguration sharedInstance].cancelButtonHeight + safeArea);
+            make.bottom.equalTo(self).priorityHigh();
         }];
-        
+
         self.hasInstalledConstraints = YES;
     }
-    
+
     [self.titleLabelHC0 deactivate];
     [self.titleLabelHC30 deactivate];
 
@@ -153,7 +147,7 @@
     } else {
         [self.titleLabelHC30 activate];
     }
-    
+
     [super updateConstraints];
 }
 
@@ -183,6 +177,7 @@
         _tableView.backgroundColor = nil;
         _tableView.dataSource = self;
         _tableView.delegate = self;
+        _tableView.delaysContentTouches = NO;
         
         [self addSubview:_tableView];
     }
@@ -191,14 +186,8 @@
 
 - (UIButton *)cancelButton {
     if (!_cancelButton) {
-        CGFloat bottom = 0;
-        if (@available(iOS 11, *)) {
-            bottom = [[UIApplication sharedApplication] delegate].window.safeAreaInsets.bottom;
-        }
+        CGFloat bottom = [self safeAreaBottom];
         UIColor *color = [UIColor colorWithHexString:@"#F8F8FF"];
-//        if (@available(iOS 13, *)) {
-//            color = [UIColor secondarySystemBackgroundColor];
-//        }
 
         _cancelButton = [[UIButton alloc] init];
         _cancelButton.backgroundColor = [UIColor whiteColor];
@@ -222,6 +211,12 @@
     [self.tableView mas_updateConstraints:^(MASConstraintMaker *make) {
         make.height.mas_equalTo(self.dataSource.count * [ZKActionSheetConfiguration sharedInstance].itemHeight);
     }];
+}
+
+- (CGFloat)safeAreaBottom {
+    CGFloat safeArea = 0;
+    if (@available(iOS 11.0, *)) safeArea = [[UIApplication sharedApplication] delegate].window.safeAreaInsets.bottom;
+    return safeArea;
 }
 
 @end

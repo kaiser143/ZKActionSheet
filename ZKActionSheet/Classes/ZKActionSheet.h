@@ -22,8 +22,8 @@
  *	@param 	shareArray 	上面一排分享项目
  *	@param 	functionArray 	下面一排分享项目
  */
-+ (instancetype)shareViewWithShareItems:(NSArray<ZKActionItem *> *)shareArray
-                          functionItems:(NSArray<ZKActionItem *> *)functionArray;
++ (instancetype)actionSheetWithShareItems:(NSArray<ZKActionItem *> *)shareArray
+                            functionItems:(NSArray<ZKActionItem *> *)functionArray;
 - (instancetype)initWithShareItems:(NSArray<ZKActionItem *> *)shareArray
                      functionItems:(NSArray<ZKActionItem *> *)functionArray;
 

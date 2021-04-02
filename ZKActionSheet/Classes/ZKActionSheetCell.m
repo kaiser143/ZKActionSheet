@@ -6,9 +6,9 @@
 //
 //
 
-#import "ZKActionSheetCell.h"
-#import "ZKActionItemCell.h"
 #import "ZKActionItem.h"
+#import "ZKActionItemCell.h"
+#import "ZKActionSheetCell.h"
 #import "ZKActionSheetConfiguration.h"
 
 #if __has_include(<Masonry/Masonry.h>)
@@ -34,45 +34,62 @@
     if (!self) {
         return nil;
     }
-    
+
     [self setNeedsUpdateConstraints];
     [self updateConstraintsIfNeeded];
-    
+
     return self;
 }
 
 #pragma mark - UICollectionViewDataSource
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return self.items.count;
+    return self.dataSource.count;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     ZKActionItemCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([ZKActionItemCell class])
-                                                                      forIndexPath:indexPath];
-    
-    ZKActionItem *item = self.items[indexPath.item];
+                                                                       forIndexPath:indexPath];
+
+    ZKActionItem *item = self.dataSource[indexPath.item];
     NSAssert([item isKindOfClass:[ZKActionItem class]], @"数组`shareArray`或者`functionArray`的元素必须为ZKActionItem对象");
     cell.item = item;
-    
+
     return cell;
 }
 
 #pragma mark - UICollectionViewDelegate
+
+- (void)collectionView:(UICollectionView *)collectionView didHighlightItemAtIndexPath:(NSIndexPath *)indexPath {
+    ZKActionItemCell *cell      = (ZKActionItemCell *)[collectionView cellForItemAtIndexPath:indexPath];
+    cell.iconButton.highlighted = YES;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didUnhighlightItemAtIndexPath:(NSIndexPath *)indexPath {
+    ZKActionItemCell *cell      = (ZKActionItemCell *)[collectionView cellForItemAtIndexPath:indexPath];
+    cell.iconButton.highlighted = NO;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    ZKActionItem *item = self.dataSource[indexPath.item];
+
+    !item.handler ?: item.handler();
+    [[NSNotificationCenter defaultCenter] postNotificationName:ZKActionSheetWillHideNotification object:nil];
+}
 
 #pragma mark - Private Methods
 
 - (void)updateConstraints {
     if (!self.hasInstalledConstraints) {
         self.backgroundColor = nil;
-        
+
         [self.collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.equalTo(self);
+            make.edges.equalTo(self.contentView);
         }];
-        
+
         self.hasInstalledConstraints = YES;
     }
-    
+
     [super updateConstraints];
 }
 
@@ -80,21 +97,20 @@
 
 - (UICollectionView *)collectionView {
     if (!_collectionView) {
-        _collectionView = [[UICollectionView alloc] initWithFrame:self.bounds collectionViewLayout:self.flowLayout];
-        _collectionView.alwaysBounceHorizontal = YES; // 小于等于一页时, 允许bounce
+        _collectionView                                = [[UICollectionView alloc] initWithFrame:self.bounds collectionViewLayout:self.flowLayout];
+        _collectionView.alwaysBounceHorizontal         = YES; // 小于等于一页时, 允许bounce
         _collectionView.showsHorizontalScrollIndicator = NO;
-        _collectionView.delegate = self;
-        _collectionView.dataSource = self;
-        _collectionView.delaysContentTouches = NO;
+        _collectionView.delegate                       = self;
+        _collectionView.dataSource                     = self;
+        _collectionView.delaysContentTouches           = NO;
         if (@available(iOS 13, *)) {
             _collectionView.backgroundColor = [UIColor secondarySystemBackgroundColor];
         } else {
             _collectionView.backgroundColor = [UIColor whiteColor];
         }
-        
-        [_collectionView registerClass:[ZKActionItemCell class]
-            forCellWithReuseIdentifier:NSStringFromClass([ZKActionItemCell class])];
-        
+
+        [_collectionView registerClass:[ZKActionItemCell class] forCellWithReuseIdentifier:NSStringFromClass(ZKActionItemCell.class)];
+
         [self.contentView addSubview:_collectionView];
     }
     return _collectionView;
@@ -102,12 +118,12 @@
 
 - (UICollectionViewFlowLayout *)flowLayout {
     if (!_flowLayout) {
-        _flowLayout = [[UICollectionViewFlowLayout alloc] init];
+        _flowLayout                         = [[UICollectionViewFlowLayout alloc] init];
         _flowLayout.minimumInteritemSpacing = 0;
-        _flowLayout.minimumLineSpacing = 0;
-        _flowLayout.sectionInset = UIEdgeInsetsMake(0, 10, 0, 10);
-        _flowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-        _flowLayout.itemSize = CGSizeMake([ZKActionSheetConfiguration sharedInstance].itemWidth,
+        _flowLayout.minimumLineSpacing      = 0;
+        _flowLayout.sectionInset            = UIEdgeInsetsMake(0, 10, 0, 10);
+        _flowLayout.scrollDirection         = UICollectionViewScrollDirectionHorizontal;
+        _flowLayout.itemSize                = CGSizeMake([ZKActionSheetConfiguration sharedInstance].itemWidth,
                                           [ZKActionSheetConfiguration sharedInstance].itemHeight);
     }
     return _flowLayout;

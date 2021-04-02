@@ -20,8 +20,8 @@ NSString *const ZKActionSheetWillHideNotification = @"KAI_ZKActionSheetWillHideN
 
 @interface ZKActionItemCell ()
 
-@property (nonatomic, strong) UIButton *iconButton;
-@property (nonatomic, strong) UITextView *titleView;
+@property (nonatomic, strong, readwrite) UIButton *iconButton;
+@property (nonatomic, strong, readwrite) UITextView *titleView;
 @property (nonatomic, assign) BOOL hasInstalledConstraints;
 
 @end
@@ -36,6 +36,7 @@ NSString *const ZKActionSheetWillHideNotification = @"KAI_ZKActionSheetWillHideN
         return nil;
     }
     
+    [self commonInit];
     [self setNeedsUpdateConstraints];
     [self updateConstraintsIfNeeded];
     
@@ -44,19 +45,12 @@ NSString *const ZKActionSheetWillHideNotification = @"KAI_ZKActionSheetWillHideN
 
 #pragma mark - events Handler
 
-- (void)didTappedButton {
-    if (self.item.didTappedHandler) {
-        self.item.didTappedHandler();
-    }
-    [[NSNotificationCenter defaultCenter] postNotificationName:ZKActionSheetWillHideNotification object:nil];
-}
-
 #pragma mark - Private Methods
 
 - (void)updateConstraints {
     if (!self.hasInstalledConstraints) {
         CGFloat titleInset = 4;
-        
+
         [self.iconButton mas_makeConstraints:^(MASConstraintMaker *make) {
             CGFloat width = [ZKActionSheetConfiguration sharedInstance].itemWidth;
             make.width.and.height.mas_equalTo(width-[ZKActionSheetConfiguration sharedInstance].itemInterval);
@@ -69,50 +63,48 @@ NSString *const ZKActionSheetWillHideNotification = @"KAI_ZKActionSheetWillHideN
             make.width.equalTo(self).with.offset(2*titleInset);
             make.height.mas_equalTo(30);
         }];
-        
+
         self.hasInstalledConstraints = YES;
     }
-    
+
     [super updateConstraints];
+}
+
+- (void)commonInit {
+    [self.contentView addSubview:self.iconButton];
+    [self.contentView addSubview:self.titleView];
 }
 
 #pragma mark - getters and setters
 
 - (UIButton *)iconButton {
     if (!_iconButton) {
-        _iconButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_iconButton addTarget:self
-                        action:@selector(didTappedButton)
-              forControlEvents:UIControlEventTouchUpInside];
-        
-        [self addSubview:_iconButton];
+        _iconButton                        = [[UIButton alloc] init];
+        _iconButton.userInteractionEnabled = NO;
     }
-    
+
     return _iconButton;
 }
 
 - (UITextView *)titleView {
     if (!_titleView) {
-        _titleView = [[UITextView alloc] init];
-        _titleView.textColor = [UIColor darkGrayColor];
-        _titleView.font = [UIFont systemFontOfSize:11];
-        _titleView.contentInset = UIEdgeInsetsMake(-10, 0, 0, 0);
-        _titleView.backgroundColor = nil;
-        _titleView.textAlignment = NSTextAlignmentCenter;
+        _titleView                        = [[UITextView alloc] init];
+        _titleView.textColor              = [UIColor darkGrayColor];
+        _titleView.font                   = [UIFont systemFontOfSize:11];
+        _titleView.contentInset           = UIEdgeInsetsMake(-10, 0, 0, 0);
+        _titleView.backgroundColor        = nil;
+        _titleView.textAlignment          = NSTextAlignmentCenter;
         _titleView.userInteractionEnabled = NO;
-        
-        [self addSubview:_titleView];
     }
-    
+
     return _titleView;
 }
 
 - (void)setItem:(ZKActionItem *)item {
     _item = item;
-    
+
     [self.iconButton setImage:[UIImage imageNamed:item.icon]
                      forState:UIControlStateNormal];
     self.titleView.text = item.title;
 }
-
 @end

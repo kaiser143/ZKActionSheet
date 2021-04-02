@@ -10,14 +10,14 @@
 
 @implementation ZKActionItem
 
-+ (instancetype)itemWithTitle:(NSString *)title
-                         icon:(NSString *)icon
-             didTappedHandler:(dispatch_block_t)didTappedHandler {
-    ZKActionItem *item = [[self alloc] init];
-    item.title = title;
-    item.icon = icon;
-    item.didTappedHandler = didTappedHandler;
-    
++ (instancetype)actionWithTitle:(NSString *)title
+                           icon:(NSString *)icon
+                        handler:(dispatch_block_t)handler {
+    ZKActionItem *item    = [[self alloc] init];
+    item.title            = title;
+    item.icon             = icon;
+    item.handler = handler;
+
     return item;
 }
 

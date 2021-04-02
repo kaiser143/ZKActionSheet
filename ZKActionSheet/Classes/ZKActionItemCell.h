@@ -14,6 +14,9 @@ extern NSString *const ZKActionSheetWillHideNotification;
 
 @interface ZKActionItemCell : UICollectionViewCell
 
+@property (nonatomic, strong, readonly) UIButton *iconButton;
+@property (nonatomic, strong, readonly) UITextView *titleView;
+
 @property (nonatomic, strong) ZKActionItem *item;
 
 @end
